@@ -6,7 +6,8 @@
         "build": "netlify-lambda build script/api/endpoint"
     },
     "dependencies": {
-        "request": "^2.88.2"
+        "request": "^2.88.2",
+        "axios": "^0.19.2"
     },
     "devDependencies": {
         "netlify-lambda": "^1.6.3"

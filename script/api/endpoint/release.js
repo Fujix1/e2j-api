@@ -5,7 +5,7 @@ import axios from 'axios';
 import * as common from "../common";
 
 exports.handler = async () => {
-    const url = `${common.site_url}/mametan.json`;
+    const url = `${common.site_url}/releases.json`;
     return axios.get(url).then(({ data: data }) => ({
         statusCode: 200,
         headers: {
