@@ -9,6 +9,9 @@
 
 ```
 npm install
+# Zola
+cd generator
+zola serve
 # lambda function devel
 npm run devel
 
