@@ -1,0 +1,14 @@
+{
+    "name": "e2j-api",
+    "version": "0.1.0",
+    "scripts": {
+        "devel": "export URL=http://127.0.0.1:1111 && netlify-lambda serve script/api/endpoint",
+        "build": "netlify-lambda build script/api/endpoint"
+    },
+    "dependencies": {
+        "request": "^2.88.2"
+    },
+    "devDependencies": {
+        "netlify-lambda": "^1.6.3"
+    }
+}

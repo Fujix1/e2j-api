@@ -1,0 +1,5 @@
+node_modules/
+dist/
+generator/public/
+mame/dictionary/mecab.dic
+mame/whatnewj/*.html

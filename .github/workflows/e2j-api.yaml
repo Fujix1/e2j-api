@@ -1,0 +1,38 @@
+name: e2j-api
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Set LANG
+      run: |
+        sudo locale-gen ja_JP.UTF-8
+        sudo /usr/sbin/update-locale LANG=ja_JP.UTF-8
+        echo "[LANG]: ${LANG}"
+
+    - name: Install MeCab
+      run: |
+        sudo apt install mecab libmecab-dev mecab-ipadic-utf8
+        sudo apt install jq
+        sudo apt install csvkit
+
+    - name: Create JSON index
+      run: |
+        ./script/dictionary/create_mame_tan.sh
+        ./script/dictionary/create_releases.sh
+        ./script/dictionary/create_mame_md.sh
+
+    - name: Commit files
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git commit -m "update automatic search index by GitHub Action" -a | tee
+
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}

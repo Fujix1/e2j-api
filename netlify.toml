@@ -1,0 +1,13 @@
+[build]
+command = "npm run build && (cd generator && zola build --base-url $URL)"
+publish = "generator/public"
+functions = "dist/api"
+
+[build.environment]
+ZOLA_VERSION = "0.10.0"
+
+[[redirects]]
+    from = "/v1/*"
+    to = "/.netlify/functions/:splat"
+    status = 200
+    force = true
