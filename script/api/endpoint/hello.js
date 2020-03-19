@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-const mametan = fs.readFileSync('generator/static/mametan.json', 'utf-8');
+const mametan = fs.readFileSync('/dist/mametan.json', 'utf-8');
 
 exports.handler = async () => {
     return {
