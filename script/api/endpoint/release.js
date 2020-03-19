@@ -1,19 +1,23 @@
 /**
- * e2j releases API
+ * e2j release API
  */
-import axios from 'axios';
 import * as common from "../common";
 
+// request URL
+const url = `${common.site_url}/releases.json`;
+
 exports.handler = async () => {
-    const url = `${common.site_url}/releases.json`;
-    return axios.get(url).then(({ data: data }) => ({
-        statusCode: 200,
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    })).catch(e => ({
-        statusCode: 400,
-        body: e
-    }));
+    try {
+        let release = await common.getJson(url);
+        return {
+            statusCode: 200,
+            headers: common.jsonHeader,
+            body: JSON.stringify(release)
+        }
+    } catch(error) {
+        return {
+            statusCode: 500,
+            body: []
+        }
+    }
 };
