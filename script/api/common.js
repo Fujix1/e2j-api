@@ -11,7 +11,8 @@ import axios from 'axios';
 export const site_url = process.env['URL'];
 
 export const jsonHeader = {
-    "Content-Type": "application/json; charset=utf-8"
+    "Content-Type": "application/json; charset=utf-8",
+    "Access-Control-Allow-Origin":  "*"
 };
 
 /**
