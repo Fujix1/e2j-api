@@ -26,7 +26,7 @@ let jsonCache = {};
  * @param url
  * @return JSON
  */
-export async function getJson(url) {
+export async function getJsonHttp(url) {
     if(url in jsonCache) return jsonCache[url];
     try {
         const res = await axios.get(url);

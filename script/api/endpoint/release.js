@@ -8,7 +8,7 @@ const url = `${common.site_url}/releases.json`;
 
 exports.handler = async () => {
     try {
-        let release = await common.getJson(url);
+        let release = await common.getJsonHttp(url);
         return {
             statusCode: 200,
             headers: common.jsonHeader,

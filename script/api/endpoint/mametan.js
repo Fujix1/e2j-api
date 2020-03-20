@@ -8,7 +8,7 @@ const url = `${common.site_url}/mametan.json`;
 
 exports.handler = async () => {
     try {
-        let mametan = await common.getJson(url);
+        let mametan = await common.getJsonHttp(url);
         return {
             statusCode: 200,
             headers: common.jsonHeader,
