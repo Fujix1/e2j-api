@@ -105,7 +105,7 @@ do
     # テキストファイルで、日本語改行後の行頭にスペースがある場合は
     # 連続する文章として連結する。英単語の場合は連結しない。
     SEARCH_DIC_TMP_JUSTFY=$(mktemp)
-    sed -z -r 's/([亜-熙ぁ-んァ-ヶー])\n\s*/\1/g' ${path} > ${SEARCH_DIC_TMP_JUSTFY}
+    sed -z -r 's/([亜-熙ぁ-んァ-ヶー])\n +([亜-熙ぁ-んァ-ヶー]+)/\1\2/g' ${path} > ${SEARCH_DIC_TMP_JUSTFY}
     # MeCab による形態素解析
     mecab ${SEARCH_DIC_TMP_JUSTFY} \
         -u ${MECAB_DIC} \
