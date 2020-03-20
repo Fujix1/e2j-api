@@ -14,24 +14,42 @@ export PROJECT_HOME=$(cd $(dirname $0)/../../; pwd)
 
 find ${WHATSNEW_DIR} -name ${WHATSNEW_NAME} | while read whatsnewj
 do
-    find="false"
-    grep -2 -n '堕落天使' ${whatsnewj} | while read line
+    # 形態素解析したテキストと同じ正規化したテキストに対して検索し
+    # 改行をまたいだ単語を検索できるようにする。（TODO: 英単語の場合は要スペース挿入）
+    SEARCH_DIC_TMP_JUSTFY=$(mktemp)
+    sed -z -r 's/([亜-熙ぁ-んァ-ヶー])\n\s*/\1/g' ${whatsnewj} > ${SEARCH_DIC_TMP_JUSTFY}
+    fisrtline="true"
+    grep '堕落天使' ${SEARCH_DIC_TMP_JUSTFY} | while read line
     do
-        if [[ ${find} = "false" ]]
+        if [[ ${fisrtline} = "true" ]]
         then
             # 検索結果の本文が入っているテキストファイル名（ここにリンク）
             filename=`basename ${whatsnewj}`
-            # バージョンからリリース日取得
-            versions=$(echo ${filename} | sed 's/whatsnewJ_//g' | sed 's/.txt//g')
-            echo ${versions} | awk -F "_" '{ print $1 }' | while read v
-            do
-                echo $v;
-            done
-            echo ${filename}:${version}
-            find=true
+            echo ${filename}
+            fisrtline=false
         fi
-        echo $line
+        # 正規化した行から最大80桁取得し正規化前のファイルから再検索して
+        # 出力行を取得（改行をまたがったワードは最初の出現行となる）
+        serach_line=$(echo $line | awk '{ print substr($0, 1, 80) }')
+        grep -3 -n -F "${serach_line}" ${whatsnewj} | awk '
+            BEGIN {
+                findline = 0;
+            }
+            /^[0-9]+:/ {
+                # 単語出現行
+                findline = substr($0, 1, match($0, ":") - 1)
+                print substr($0, match($0, ":") + 1, length($0) - 1);
+            }
+            /[0-9]+-/ {
+                # 単語出力行の前後
+                print substr($0, match($0, "-") + 1, length($0) - 1);
+            }
+            END {
+                print findline
+            }
+        '
     done
+    rm ${SEARCH_DIC_TMP_JUSTFY}
 done
 
 exit 0
