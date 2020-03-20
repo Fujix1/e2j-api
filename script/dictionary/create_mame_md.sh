@@ -18,7 +18,7 @@ find ${WHATSNEW_DIR} -name ${WHATSNEW_NAME} | while read whatsnewj
 do
     # 形態素解析したテキストと同じ正規化したテキストに対して検索し
     # 改行をまたいだ単語を検索できるようにする。（TODO: 英単語の場合は要スペース挿入）
-    sed -z -r 's/([亜-熙ぁ-んァ-ヶー])\n +([亜-熙ぁ-んァ-ヶー]+)/\1\2/g' \
+    sed -z -r 's/([亜-熙ぁ-んァ-ヶー])\n[ |　]*([亜-熙ぁ-んァ-ヶー]+)/\1\2/g' \
         ${whatsnewj} > ${SEARCH_DIC_TMP_JUSTFY_DIR}/$(basename ${whatsnewj})
 done
 
@@ -69,7 +69,7 @@ do
         # 形態素解析したテキストと同じ正規化したテキストに対して検索し
         # 改行をまたいだ単語を検索できるようにする。（TODO: 英単語の場合は要スペース挿入）
         SEARCH_DIC_TMP_JUSTFY=$(mktemp)
-        sed -z -r 's/([亜-熙ぁ-んァ-ヶー])\n\s*/\1/g' ${whatsnewj} > ${SEARCH_DIC_TMP_JUSTFY}
+        sed -z -r 's/([亜-熙ぁ-んァ-ヶー])\n[ |　]+([亜-熙ぁ-んァ-ヶー]+)/\1\2/g' ${whatsnewj} > ${SEARCH_DIC_TMP_JUSTFY}
         fisrtline="true"
         grep -F ${word} ${SEARCH_DIC_TMP_JUSTFY} | while read line
         do
