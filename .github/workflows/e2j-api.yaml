@@ -22,9 +22,9 @@ jobs:
 
     - name: Create JSON index
       run: |
-        ./script/dictionary/create_mame_tan.sh
         ./script/dictionary/create_releases.sh
-        ./script/dictionary/create_mame_md.sh
+        ./script/dictionary/create_mametan.sh
+        ./script/dictionary/create_mametan_json.sh
 
     - name: Commit files
       run: |
