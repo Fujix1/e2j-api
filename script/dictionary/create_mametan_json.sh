@@ -1,6 +1,6 @@
 #!/bin/bash
 ######################################################################
-## What's new J 全文検索 API 用 Zola 用 Markdown 生成スクリプト
+## What's new J 全文検索 API 用 辞書 JSON 生成スクリプト
 ######################################################################
 
 # プロジェクトの絶対パス取得
@@ -23,6 +23,7 @@ do
 done
 
 SEARCH_DIC_TMP_JUSTFY=$(mktemp)
+SEARCH_DIC_TMP_JUSTFY=./test.txt
 cat ${SEARCH_INDEX_JSON} | jq -r '.[]' | while read word
 do
     grep -1 -n -F ${word} ${SEARCH_DIC_TMP_JUSTFY_DIR}/${WHATSNEW_NAME} | awk -v word="${word}" '
@@ -56,6 +57,8 @@ do
     ' >> ${SEARCH_DIC_TMP_JUSTFY}
 done
 rm -Rf ${SEARCH_DIC_TMP_JUSTFY_DIR}
+
+exit 0
 
 # cat ${SEARCH_DIC_TMP_JUSTFY} | awk '
 #     BEGIN {
@@ -100,5 +103,3 @@ rm -Rf ${SEARCH_DIC_TMP_JUSTFY_DIR}
 #         content = content $0 "\n"
 #     }
 # ' > /dev/null
-
-exit 0
