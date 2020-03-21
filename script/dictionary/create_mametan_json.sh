@@ -23,10 +23,9 @@ do
 done
 
 SEARCH_DIC_TMP_JUSTFY=$(mktemp)
-SEARCH_DIC_TMP_JUSTFY=./test.txt
 cat ${SEARCH_INDEX_JSON} | jq -r '.[]' | while read word
 do
-    grep -1 -n -F ${word} ${SEARCH_DIC_TMP_JUSTFY_DIR}/${WHATSNEW_NAME} | awk -v word="${word}" '
+    grep -1 -n --ignore-case -F ${word} ${SEARCH_DIC_TMP_JUSTFY_DIR}/${WHATSNEW_NAME} | awk -v word="${word}" '
         BEGIN {
             filename = ""
             lineno = 0
