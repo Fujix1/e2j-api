@@ -13,19 +13,19 @@ export PROJECT_HOME=$(cd $(dirname $0)/../../; pwd)
 ######################################################################
 
 # 検索対象を正規化しテンポラリーディレクトリに格納
-SEARCH_DIC_TMP_JUSTFY_DIR=$(mktemp -d)
+SEARCH_DIC_TMP_REGEX_DIR=$(mktemp -d)
 find ${WHATSNEW_DIR} -name ${WHATSNEW_NAME} | while read whatsnewj
 do
     # 形態素解析したテキストと同じ正規化したテキストに対して検索し
     # 改行をまたいだ単語を検索できるようにする。（TODO: 英単語の場合は要スペース挿入）
     sed -z -r 's/([亜-熙ぁ-んァ-ヶー])\n[ |　]*([亜-熙ぁ-んァ-ヶー]+)/\1\2/g' \
-        ${whatsnewj} > ${SEARCH_DIC_TMP_JUSTFY_DIR}/$(basename ${whatsnewj})
+        ${whatsnewj} > ${SEARCH_DIC_TMP_REGEX_DIR}/$(basename ${whatsnewj})
 done
 
-SEARCH_DIC_TMP_JUSTFY=$(mktemp)
+SEARCH_DIC_TMP_REGEX=$(mktemp)
 cat ${SEARCH_INDEX_JSON} | jq -r '.[]' | while read word
 do
-    grep -1 -n --ignore-case -F ${word} ${SEARCH_DIC_TMP_JUSTFY_DIR}/${WHATSNEW_NAME} | awk -v word="${word}" '
+    grep -1 -n --ignore-case -F ${word} ${SEARCH_DIC_TMP_REGEX_DIR}/${WHATSNEW_NAME} | awk -v word="${word}" '
         BEGIN {
             filename = ""
             lineno = 0
@@ -53,13 +53,13 @@ do
             print "@" word "@" filename ":" lineno "@\n"
             print buffer
         }
-    ' >> ${SEARCH_DIC_TMP_JUSTFY}
+    ' >> ${SEARCH_DIC_TMP_REGEX}
 done
-rm -Rf ${SEARCH_DIC_TMP_JUSTFY_DIR}
+rm -Rf ${SEARCH_DIC_TMP_REGEX_DIR}
 
 exit 0
 
-# cat ${SEARCH_DIC_TMP_JUSTFY} | awk '
+# cat ${SEARCH_DIC_TMP_REGEX} | awk '
 #     BEGIN {
 #         word = ""
 #         filename = ""
