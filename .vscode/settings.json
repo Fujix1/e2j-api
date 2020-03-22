@@ -1,5 +1,6 @@
 {
     "files.associations": {
         "*.html": "jinja-html"
-    }
+    },
+    "python.pythonPath": "C:\\Python37\\python.exe"
 }
