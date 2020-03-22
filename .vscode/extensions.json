@@ -3,6 +3,7 @@
     // for the documentation about the extensions.json format
     "recommendations": [
         "EditorConfig.EditorConfig",
-        "samuelcolvin.jinjahtml"
+        "samuelcolvin.jinjahtml",
+        "rogalmic.bash-debug"
     ]
 }
