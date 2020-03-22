@@ -70,8 +70,8 @@ done
 # テンポラリーディレクトリを削除
 rm -Rf ${SEARCH_DIC_TMP_REGEX_DIR}
 
-# JSON 生成
-${PROJECT_HOME}/script/dictionary/create_mametan_json.py ${SEARCH_DIC_TMP_REGEX} > /dev/null
+# Python
+${PROJECT_HOME}/script/dictionary/create_mametan_json.py > /dev/null
 
 # Python 処理後にテンポラリーファイルを削除
 if [[ "$1" = "" ]]
