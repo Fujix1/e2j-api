@@ -13,25 +13,36 @@ export PROJECT_HOME=$(cd $(dirname $0)/../../; pwd)
 ######################################################################
 
 # 検索対象を正規化しテンポラリーディレクトリに格納
-SEARCH_DIC_TMP_JUSTFY_DIR=$(mktemp -d)
+SEARCH_DIC_TMP_REGEX_DIR=$(mktemp -d)
 find ${WHATSNEW_DIR} -name ${WHATSNEW_NAME} | while read whatsnewj
 do
     # 形態素解析したテキストと同じ正規化したテキストに対して検索し
     # 改行をまたいだ単語を検索できるようにする。（TODO: 英単語の場合は要スペース挿入）
     sed -z -r 's/([亜-熙ぁ-んァ-ヶー])\n[ |　]*([亜-熙ぁ-んァ-ヶー]+)/\1\2/g' \
-        ${whatsnewj} > ${SEARCH_DIC_TMP_JUSTFY_DIR}/$(basename ${whatsnewj})
+        ${whatsnewj} > ${SEARCH_DIC_TMP_REGEX_DIR}/$(basename ${whatsnewj})
 done
 
-SEARCH_DIC_TMP_JUSTFY=$(mktemp)
+# Python で JSON 化する前に高速な grep コマンドで検索し
+# テンポラリーファイルとして出力し、結果を Python から取得する。
+if [[ "$1" = "" ]]
+then
+    # シェル引数 $1 がない場合は /tmp に作成し処理後に削除
+    SEARCH_DIC_TMP_REGEX=$(mktemp)
+else
+    # シェル引数 $1 がある場合は指定のパスにファイル出力（テスト用）
+    SEARCH_DIC_TMP_REGEX=$1
+fi
+# 単語帳 JSON を 1語ごとに検索
 cat ${SEARCH_INDEX_JSON} | jq -r '.[]' | while read word
 do
-    grep -1 -n --ignore-case -F ${word} ${SEARCH_DIC_TMP_JUSTFY_DIR}/${WHATSNEW_NAME} | awk -v word="${word}" '
+    grep -1 -n --ignore-case -F --group-separator="@@@@@@@@@@" \
+        "${word}" ${SEARCH_DIC_TMP_REGEX_DIR}/${WHATSNEW_NAME} | awk -v word="${word}" '
         BEGIN {
             filename = ""
             lineno = 0
             buffer = ""
         }
-        /^--$/ {
+        /^@@@@@@@@@@$/ {
             print "@" word "@" filename ":" lineno "@\n"
             print buffer
             filename = ""
@@ -53,52 +64,19 @@ do
             print "@" word "@" filename ":" lineno "@\n"
             print buffer
         }
-    ' >> ${SEARCH_DIC_TMP_JUSTFY}
+    ' >> ${SEARCH_DIC_TMP_REGEX}
 done
-rm -Rf ${SEARCH_DIC_TMP_JUSTFY_DIR}
+
+# テンポラリーディレクトリを削除
+rm -Rf ${SEARCH_DIC_TMP_REGEX_DIR}
+
+# JSON 生成
+${PROJECT_HOME}/script/dictionary/create_mametan_json.py ${SEARCH_DIC_TMP_REGEX} > /dev/null
+
+# Python 処理後にテンポラリーファイルを削除
+if [[ "$1" = "" ]]
+then
+    rm -f ${SEARCH_DIC_TMP_REGEX}
+fi
 
 exit 0
-
-# cat ${SEARCH_DIC_TMP_JUSTFY} | awk '
-#     BEGIN {
-#         word = ""
-#         filename = ""
-#         content = ""
-#         print "{"
-#     }
-#     /^@.+@$/ {
-#         # 新しいブロックがきたら前のブロックのコンテンツを出力
-#         if(content != "") {
-#             # コンテンツを JSON エスケープして出力
-#             # シェルエスケープ
-#             gsub("\n", "\\n", content);
-#             gsub("\x22", "&#34;", content);
-#             gsub("\x27", "&#39;", content);
-#             command = "jq -n \x27\x22" content "\x22 | @text\x27"
-#             # print command
-#             command | getline var
-#             print "\t\t [ " "\"" filename "\", " var " ],"
-#             content = ""
-#             # jq -n "\"aaa\naaa\" | @html"
-#             # jq -n "\"aaa\naaa\" | @text"
-#         }
-#         # @へごワード@whatsnewJ_0208.txt:0@
-#         split($0, token, "@")
-#         # 出力中の検索語と異なれば新しい連想配列を配置
-#         if(word != token[2]) {
-#             # 出力中の検索単語ブロックを閉じる
-#             if(word != "") {
-#                 print "\t}"
-#             }
-#             word = token[2]
-#             # 検索単語を JSON エスケープして出力
-#             "jq -n \x27\x22" word "\x22 | @html\x27" | getline var
-#             print "\t" var ": {"
-#         }
-#         # これから出力するファイル名を取得
-#         filename = token[3]
-#     }
-#     /^[^@].+$/ {
-#         content = content $0 "\n"
-#     }
-# ' > /dev/null

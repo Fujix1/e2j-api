@@ -104,10 +104,10 @@ find ${WHATSNEW_DIR} -maxdepth 1 -name ${WHATSNEW_NAME} | while read path
 do
     # テキストファイルで、日本語改行後の行頭にスペースがある場合は
     # 連続する文章として連結する。英単語の場合は連結しない。
-    SEARCH_DIC_TMP_JUSTFY=$(mktemp)
-    sed -z -r 's/([亜-熙ぁ-んァ-ヶー])\n[ |　]*([亜-熙ぁ-んァ-ヶー]+)/\1\2/g' ${path} > ${SEARCH_DIC_TMP_JUSTFY}
+    SEARCH_DIC_TMP_REGEX=$(mktemp)
+    sed -z -r 's/([亜-熙ぁ-んァ-ヶー])\n[ |　]*([亜-熙ぁ-んァ-ヶー]+)/\1\2/g' ${path} > ${SEARCH_DIC_TMP_REGEX}
     # MeCab による形態素解析
-    mecab ${SEARCH_DIC_TMP_JUSTFY} \
+    mecab ${SEARCH_DIC_TMP_REGEX} \
         -u ${MECAB_DIC} \
         | egrep -v '^[!-~]+.+\*$' \
         | egrep '^.+[[:space:]]名詞,(一般|固有|サ変接続)' \
@@ -115,7 +115,7 @@ do
         | sort \
         | uniq \
         >> ${SEARCH_DIC_TMP_WORDS}
-    rm ${SEARCH_DIC_TMP_JUSTFY}
+    rm ${SEARCH_DIC_TMP_REGEX}
 done
 
 # 区切り文字列を展開して追加
@@ -147,13 +147,17 @@ rm -f ${SEARCH_DIC_EXTRACT}
 
 # サマリーから不要なワードを除外して JSON を生成する（TODO:ストップワード対応）
 #  全角半角記号で始まる
-#  一文字のカナカナひらがな英数字
+#  1文字のカナカナひらがな英数字
+#  2桁の数値
+#  英文字のみ（TODO:英単語対応）
 echo -n -e "[\n" > ${SEARCH_INDEX_JSON}
 cat ${SEARCH_DIC_SUMARRY} \
     | egrep -v '^[！-／：　〜～。、■？（）「」＃→]' \
     | egrep -v '^[“”°–]' \
     | egrep -v '^[-+()%]+' \
     | egrep -v '^[ぁ-んァ-ンa-zA-Z0-9]$' \
+    | egrep -v '^[0-9][0-9]$' \
+    | egrep -v '^[A-Z]+$' \
     | uniq \
     | sort -r \
     | while read line

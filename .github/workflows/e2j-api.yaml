@@ -1,6 +1,9 @@
 name: e2j-api
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
