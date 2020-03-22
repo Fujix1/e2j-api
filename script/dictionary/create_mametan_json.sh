@@ -35,13 +35,14 @@ fi
 # 単語帳 JSON を 1語ごとに検索
 cat ${SEARCH_INDEX_JSON} | jq -r '.[]' | while read word
 do
-    grep -1 -n --ignore-case -F "${word}" ${SEARCH_DIC_TMP_REGEX_DIR}/${WHATSNEW_NAME} | awk -v word="${word}" '
+    grep -1 -n --ignore-case -F --group-separator="@@@@@@@@@@" \
+        "${word}" ${SEARCH_DIC_TMP_REGEX_DIR}/${WHATSNEW_NAME} | awk -v word="${word}" '
         BEGIN {
             filename = ""
             lineno = 0
             buffer = ""
         }
-        /^--$/ {
+        /^@@@@@@@@@@$/ {
             print "@" word "@" filename ":" lineno "@\n"
             print buffer
             filename = ""
@@ -69,7 +70,8 @@ done
 # テンポラリーディレクトリを削除
 rm -Rf ${SEARCH_DIC_TMP_REGEX_DIR}
 
-# Python
+# JSON 生成
+${PROJECT_HOME}/script/dictionary/create_mametan_json.py ${SEARCH_DIC_TMP_REGEX} > /dev/null
 
 # Python 処理後にテンポラリーファイルを削除
 if [[ "$1" = "" ]]
