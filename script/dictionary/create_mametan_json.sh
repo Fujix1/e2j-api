@@ -22,10 +22,20 @@ do
         ${whatsnewj} > ${SEARCH_DIC_TMP_REGEX_DIR}/$(basename ${whatsnewj})
 done
 
-SEARCH_DIC_TMP_REGEX=$(mktemp)
+# Python で JSON 化する前に高速な grep コマンドで検索し
+# テンポラリーファイルとして出力し、結果を Python から取得する。
+if [[ "$1" = "" ]]
+then
+    # シェル引数 $1 がない場合は /tmp に作成し処理後に削除
+    SEARCH_DIC_TMP_REGEX=$(mktemp)
+else
+    # シェル引数 $1 がある場合は指定のパスにファイル出力（テスト用）
+    SEARCH_DIC_TMP_REGEX=$1
+fi
+# 単語帳 JSON を 1語ごとに検索
 cat ${SEARCH_INDEX_JSON} | jq -r '.[]' | while read word
 do
-    grep -1 -n --ignore-case -F ${word} ${SEARCH_DIC_TMP_REGEX_DIR}/${WHATSNEW_NAME} | awk -v word="${word}" '
+    grep -1 -n --ignore-case -F "${word}" ${SEARCH_DIC_TMP_REGEX_DIR}/${WHATSNEW_NAME} | awk -v word="${word}" '
         BEGIN {
             filename = ""
             lineno = 0
@@ -55,50 +65,16 @@ do
         }
     ' >> ${SEARCH_DIC_TMP_REGEX}
 done
+
+# テンポラリーディレクトリを削除
 rm -Rf ${SEARCH_DIC_TMP_REGEX_DIR}
 
-exit 0
+# Python
 
-# cat ${SEARCH_DIC_TMP_REGEX} | awk '
-#     BEGIN {
-#         word = ""
-#         filename = ""
-#         content = ""
-#         print "{"
-#     }
-#     /^@.+@$/ {
-#         # 新しいブロックがきたら前のブロックのコンテンツを出力
-#         if(content != "") {
-#             # コンテンツを JSON エスケープして出力
-#             # シェルエスケープ
-#             gsub("\n", "\\n", content);
-#             gsub("\x22", "&#34;", content);
-#             gsub("\x27", "&#39;", content);
-#             command = "jq -n \x27\x22" content "\x22 | @text\x27"
-#             # print command
-#             command | getline var
-#             print "\t\t [ " "\"" filename "\", " var " ],"
-#             content = ""
-#             # jq -n "\"aaa\naaa\" | @html"
-#             # jq -n "\"aaa\naaa\" | @text"
-#         }
-#         # @へごワード@whatsnewJ_0208.txt:0@
-#         split($0, token, "@")
-#         # 出力中の検索語と異なれば新しい連想配列を配置
-#         if(word != token[2]) {
-#             # 出力中の検索単語ブロックを閉じる
-#             if(word != "") {
-#                 print "\t}"
-#             }
-#             word = token[2]
-#             # 検索単語を JSON エスケープして出力
-#             "jq -n \x27\x22" word "\x22 | @html\x27" | getline var
-#             print "\t" var ": {"
-#         }
-#         # これから出力するファイル名を取得
-#         filename = token[3]
-#     }
-#     /^[^@].+$/ {
-#         content = content $0 "\n"
-#     }
-# ' > /dev/null
+# Python 処理後にテンポラリーファイルを削除
+if [[ "$1" = "" ]]
+then
+    rm -f ${SEARCH_DIC_TMP_REGEX}
+fi
+
+exit 0
