@@ -4,6 +4,7 @@
     "recommendations": [
         "EditorConfig.EditorConfig",
         "samuelcolvin.jinjahtml",
+        "ms-python.python",
         "rogalmic.bash-debug"
     ]
 }

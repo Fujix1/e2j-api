@@ -2,10 +2,13 @@
 ## 共通環境設定
 ######################################################################
 
-# 検索窓用の JSON インデックス
+# 単語検索 インデックス JSON
 SEARCH_INDEX_JSON=${PROJECT_HOME}/generator/static/mametan.json
-# 検索窓用の JSON インデックス
+# What's New J 検索用 JSON
+SEARCH_DIC_JSON=${PROJECT_HOME}/generator/static/whatsnewj.json
+# リリース情報 JSON
 RELEASE_JSON=${PROJECT_HOME}/generator/static/releases.json
+
 # 生成元ルート
 export MAME_HOME=${PROJECT_HOME}/mame
 # WHAT'S NEW J (UTF-8版) ディレクトリ
