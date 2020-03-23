@@ -2,11 +2,13 @@
     "name": "e2j-api",
     "version": "0.1.0",
     "scripts": {
-        "devel": "export URL=http://127.0.0.1:1111 && netlify-lambda serve script/api/endpoint",
+        "devel": "export URL=http://127.0.0.1:1111 && netlify-lambda --timeout 20 serve script/api/endpoint",
         "build": "netlify-lambda build script/api/endpoint"
     },
     "dependencies": {
-        "axios": "^0.19.2"
+        "axios": "^0.19.2",
+        "decompress": "^4.2.0",
+        "decompress-tarbz2": "^4.0.0"
     },
     "devDependencies": {
         "netlify-lambda": "^1.6.3"

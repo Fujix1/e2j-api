@@ -4,11 +4,11 @@
 import * as common from "../common";
 
 // request URL
-const url = `${common.site_url}/releases.json`;
+const jsonUrl = `${common.site_url}/releases.json`;
 
 exports.handler = async () => {
     try {
-        let release = await common.getJsonHttp(url);
+        let release = await common.getJsonHttp(jsonUrl);
         return {
             statusCode: 200,
             headers: common.jsonHeader,
