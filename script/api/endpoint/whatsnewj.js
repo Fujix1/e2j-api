@@ -2,9 +2,10 @@
  * e2j whatsnewj API
  */
 import * as common from "../common";
+// import whatsnewj from "../json/whatsnewj.json";
 
 // JSON URL
-const jsonUrl = `${common.site_url}/whatsnewj.tar.gz`;
+const jsonUrl = `${common.site_url}/whatsnewj.tar.bz2`;
 
 exports.handler = async () => {
     try {

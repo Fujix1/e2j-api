@@ -5,7 +5,7 @@ import crypto from 'crypto'
 import axios from 'axios';
 import fs from 'fs';
 import decompress from 'decompress';
-import decompressTarGz from 'decompress-targz';
+import decompressTarBz2 from 'decompress-tarbz2';
 
 /**
  * for Promise
@@ -38,25 +38,15 @@ let jsonCache = {};
 export async function getJsonHttp(url) {
     if(url in jsonCache) return jsonCache[url];
     try {
-        if(url.match(/^.+\.tar\.gz$/)) {
-            // for .tar.gz arcive
-            console.log("@http start" + url);
+        if(url.match(/^.+\.tar\.bz2$/)) {
+            // for .tar.bz2 arcive
             const res = await axios.get(url, { responseType: "arraybuffer" });
             const filename = crypto.createHash('sha1').update(url).digest('hex');
-            const tar = "/tmp/" + filename + ".tar.gz";
-            console.log("@http end");
-            console.log("@write file start");
+            const tar = "/tmp/" + filename + ".tar.bz2";
             await fsp.writeFile(tar, res.data);
-            console.log("@write file end");
-            console.log("@decomporess start");
-            let ret = await decompress(tar, null, { plugins: [ decompressTarGz() ] });
-            console.log("@decomporess end");
-            console.log("@json parse start");
+            let ret = await decompress(tar, null, { plugins: [ decompressTarBz2() ] });
             let whatsnewjson = JSON.parse(ret[0].data.toString('utf-8'));
-            console.log("@json parse end");
-            console.log("@file remove start");
             await fsp.unlink(tar);
-            console.log("@file remove end");
             jsonCache[url] = whatsnewjson;
         } else {
             // for plane json
