@@ -148,6 +148,7 @@ rm -f ${SEARCH_DIC_EXTRACT}
 # サマリーから不要なワードを除外して JSON を生成する（TODO:ストップワード対応）
 #  全角半角記号で始まる
 #  1文字のカナカナひらがな英数字
+#  @ を含む文字列（TODO: 単語処理用）
 #  2桁の数値
 #  英文字のみ（TODO:英単語対応）
 echo -n -e "[\n" > ${SEARCH_INDEX_JSON}
@@ -155,6 +156,7 @@ cat ${SEARCH_DIC_SUMARRY} \
     | egrep -v '^[！-／：　〜～。、■？（）「」＃→]' \
     | egrep -v '^[“”°–]' \
     | egrep -v '^[-+()%]+' \
+    | egrep -v '@' \
     | egrep -v '^[ぁ-んァ-ンa-zA-Z0-9]$' \
     | egrep -v '^[0-9][0-9]$' \
     | egrep -v '^[A-Z]+$' \

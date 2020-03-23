@@ -35,16 +35,20 @@ fi
 # 単語帳 JSON を 1語ごとに検索
 cat ${SEARCH_INDEX_JSON} | jq -r '.[]' | while read word
 do
-    grep -1 -n --ignore-case -F --group-separator="@@@@@@@@@@" \
+    grep -1 -n --ignore-case -F \
         "${word}" ${SEARCH_DIC_TMP_REGEX_DIR}/${WHATSNEW_NAME} | awk -v word="${word}" '
         BEGIN {
             filename = ""
             lineno = 0
             buffer = ""
         }
-        /^@@@@@@@@@@$/ {
-            print "@" word "@" filename ":" lineno "@\n"
-            print buffer
+        /^--$/ {
+            # grep 区切り文字処理
+            # buffer が空でない場合は出力（TODO:）
+            if(match(buffer, "\\S")) {
+                print "@" word "@" filename "@" lineno "@\n"
+                print buffer
+            }
             filename = ""
             buffer = ""
         }
@@ -52,17 +56,24 @@ do
             # ファイル名取得
             if(filename == "") {
                 ibeg = match($0, "whatsnewJ");
-                iend = match($0, "-") - ibeg;
+                iend = match($0, ":[0-9]+:") - ibeg;
                 filename = substr($0, ibeg, iend);
             }
+            # TODO: オリジナルの whatsnewJ*.txt とソースマッピングして lineno を設定
             # コンテンツ取得
             match($0, /[\-|:][0-9]+[\-|:]/);
-            buffer = buffer substr($0, RSTART + RLENGTH, length($0) - 1) "\n";
+            add = substr($0, RSTART + RLENGTH, length($0) - 1)
+            # 空行でなければ追加（/S: 改行・空白以外の文字）
+            if(match(add, "\\S")) {
+                buffer = buffer add "\n";
+            }
         }
         END {
-            # 最終行
-            print "@" word "@" filename ":" lineno "@\n"
-            print buffer
+            # 最終行バッファフラッシュ
+            if(match(buffer, "\\S")) {
+                print "@" word "@" filename "@" lineno "@\n"
+                print buffer
+            }
         }
     ' >> ${SEARCH_DIC_TMP_REGEX}
 done
@@ -71,9 +82,13 @@ done
 rm -Rf ${SEARCH_DIC_TMP_REGEX_DIR}
 
 # JSON 生成
-${PROJECT_HOME}/script/dictionary/create_mametan_json.py ${SEARCH_DIC_TMP_REGEX} > /dev/null
+${PROJECT_HOME}/script/dictionary/create_mametan_json.py ${SEARCH_DIC_TMP_REGEX} > ${SEARCH_DIC_JSON}
+# .xz 圧縮（TODO: 定数化）
+(cd ${PROJECT_HOME}/generator/static/ && tar Jcvf whatsnewj.tar.xz whatsnewj.json)
+# 圧縮前のファイル削除
+rm -f ${SEARCH_DIC_JSON}
 
-# Python 処理後にテンポラリーファイルを削除
+# テンポラリーファイルを削除
 if [[ "$1" = "" ]]
 then
     rm -f ${SEARCH_DIC_TMP_REGEX}
