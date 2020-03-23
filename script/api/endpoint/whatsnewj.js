@@ -7,11 +7,12 @@ import whatsnewj from "../json/whatsnewj.json";
 // JSON URL
 // const jsonUrl = `${common.site_url}/whatsnewj.tar.bz2`;
 
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {
     try {
         // let whatsnewj = await common.getJsonHttp(jsonUrl);
         let answer = "[]";
         let query = event.queryStringParameters.q;
+        console.log("q=" + query);
         if(query && whatsnewj[query]) {
             answer = whatsnewj[query];
         }
