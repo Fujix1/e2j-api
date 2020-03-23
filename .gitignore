@@ -3,3 +3,5 @@ dist/
 generator/public/
 mame/dictionary/mecab.dic
 mame/whatnewj/*.html
+generator/static/whatsnewj.json
+script/api/json/*.json
