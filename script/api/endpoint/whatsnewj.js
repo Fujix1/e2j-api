@@ -4,7 +4,7 @@
 import * as common from "../common";
 
 // JSON URL
-const jsonUrl = `${common.site_url}/whatsnewj.tar.bz2`;
+const jsonUrl = `${common.site_url}/whatsnewj.tar.gz`;
 
 exports.handler = async () => {
     try {
