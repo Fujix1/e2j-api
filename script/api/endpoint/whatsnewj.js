@@ -2,18 +2,23 @@
  * e2j whatsnewj API
  */
 import * as common from "../common";
-// import whatsnewj from "../json/whatsnewj.json";
+import whatsnewj from "../json/whatsnewj.json";
 
 // JSON URL
-const jsonUrl = `${common.site_url}/whatsnewj.tar.bz2`;
+// const jsonUrl = `${common.site_url}/whatsnewj.tar.bz2`;
 
-exports.handler = async () => {
+exports.handler = async (event, context) => {
     try {
-        let whatsnewj = await common.getJsonHttp(jsonUrl);
+        // let whatsnewj = await common.getJsonHttp(jsonUrl);
+        let answer = "[]";
+        let query = event.queryStringParameters.q;
+        if(query && whatsnewj[query]) {
+            answer = whatsnewj[query];
+        }
         return {
             statusCode: 200,
             headers: common.jsonHeader,
-            body: JSON.stringify(whatsnewj)
+            body: JSON.stringify(answer)
         }
     } catch(error) {
         return {
