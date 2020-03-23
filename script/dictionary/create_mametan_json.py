@@ -21,22 +21,24 @@ args = parser.parse_args()
 content = ""
 word = ""
 filename = ""
+fileline = 0
 with open(args.file) as f:
     for line in f:
         # 単語のヘッダー行であれば取得して解析
         #  @筐体@whatsnewJ_0118u3.txt:0@
-        if re.match(r'^@.+@whatsnewJ_.+:[0-9]+@$', line):
+        if re.match(r'^@.+@whatsnewJ_.+@[0-9]+@$', line):
             # コンテンツの終わりが来たら JSON に挿入
             if content.strip() != "":
                 # 連想配列にキーがなければリストを新規作成
                 if word not in mametans:
                     mametans[word] = []
                 # 取得したリストにコンテンツを加える
-                mametans[word].append({ "filename": filename , "content": content })
+                mametans[word].append({ "filename": filename , "line": fileline, "content": content })
             # ヘッダー情報を保持
             split = re.split('@', line)
             word = split[1]
             filename = split[2]
+            fileline = split[3]
             content = ""
         else:
             # ex.
