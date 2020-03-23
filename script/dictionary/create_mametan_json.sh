@@ -83,8 +83,8 @@ rm -Rf ${SEARCH_DIC_TMP_REGEX_DIR}
 
 # JSON 生成
 ${PROJECT_HOME}/script/dictionary/create_mametan_json.py ${SEARCH_DIC_TMP_REGEX} > ${SEARCH_DIC_JSON}
-# .gz 圧縮（TODO: 定数化）
-(cd ${PROJECT_HOME}/generator/static/ && tar zcvf whatsnewj.tar.gz whatsnewj.json)
+# .bz2 圧縮（TODO: 定数化）
+(cd ${PROJECT_HOME}/generator/static/ && tar jcvf whatsnewj.tar.bz2 whatsnewj.json)
 # 圧縮前のファイル削除
 rm -f ${SEARCH_DIC_JSON}
 
