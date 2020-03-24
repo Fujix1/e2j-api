@@ -4,6 +4,7 @@ publish = "generator/public"
 functions = "dist/api"
 
 [build.environment]
+AWS_LAMBDA_JS_RUNTIME = "nodejs12.x"
 ZOLA_VERSION = "0.10.0"
 
 [[redirects]]
