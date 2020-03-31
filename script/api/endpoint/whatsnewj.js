@@ -12,7 +12,7 @@ exports.handler = async (event) => {
         // let whatsnewj = await common.getJsonHttp(jsonUrl);
         let answer = [];
         let query = event.queryStringParameters.q;
-        console.log("q=" + query);
+        console.log("queryStringParameters" + event.queryStringParameters);
         if(query && whatsnewj[query]) {
             answer = whatsnewj[query];
         }
