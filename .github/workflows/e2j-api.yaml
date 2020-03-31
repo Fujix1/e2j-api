@@ -35,6 +35,10 @@ jobs:
         git config --local user.name "GitHub Action"
         git commit -m "update automatic search index by GitHub Action" -a | tee
 
+    - name: Reduce repository
+      run: |
+        bfg --delete-files ./generator/static/whatsnewj.tar.bz2
+
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
