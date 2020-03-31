@@ -9,7 +9,8 @@ ZOLA_VERSION = "0.10.0"
 
 [[redirects]]
     from = "/v1/whatsnewj/ja/:q"
-    to = "/.netlify/functions/whatsnewj q=:q"
+    to = "/.netlify/functions/whatsnewj"
+    query = { q = ":q" }
     status = 200
 
 [[redirects]]
