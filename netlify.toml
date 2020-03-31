@@ -14,7 +14,8 @@ ZOLA_VERSION = "0.10.0"
     force = true
 
 [[redirects]]
-    from = "/v1/whatsnewj/ja/*"
-    to = "/.netlify/functions/whatsnewj?q=:splat"
+    from = "/v1/whatsnewj/ja/"
+    to = "/.netlify/functions/whatsnewj?q=:q"
+    query = { q = ":q" }
     status = 200
     force = true
