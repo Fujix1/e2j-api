@@ -8,16 +8,7 @@ AWS_LAMBDA_JS_RUNTIME = "nodejs12.x"
 ZOLA_VERSION = "0.10.0"
 
 [[redirects]]
-    from = "/v1/whatsnewj/ja/:query"
-    to = "/.netlify/functions/whatsnewj?q=:query"
+    from = "/v1/*"
+    to = "/.netlify/functions/:splat"
     status = 200
-
-[[redirects]]
-    from = "/v1/mametan"
-    to = "/.netlify/functions/mametan"
-    status = 200
-
-[[redirects]]
-    from = "/v1/release"
-    to = "/.netlify/functions/release"
-    status = 200
+    force = true
